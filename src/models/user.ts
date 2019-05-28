@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    lowercase: true,
   },
   
   password: {
@@ -26,6 +27,11 @@ const UserSchema = new mongoose.Schema({
 
   name: {
     type: String
+  },
+
+  role: {
+    type: String,
+    default: 'user', // Possible values: user | admin 
   }
 
 })

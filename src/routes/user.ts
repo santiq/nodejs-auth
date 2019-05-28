@@ -1,4 +1,7 @@
 import AuthService from '../services/auth';
+import checkRole from '../middlewares/checkRole';
+import isAuth from '../middlewares/isAuth';
+import attachCurrentUser from '../middlewares/attachCurrentUser';
 
 export default (app) => {
 
@@ -10,6 +13,19 @@ export default (app) => {
       const { user, token } = await authServiceInstance.Login(email, password);
       return res.status(200).json({ user, token }).end();
     } catch(e) {
+      return res.json(e).status(500).end();
+    }
+  })
+
+  // The middlewares need to be placed this way because they depend upong each other
+  app.post('/user/login-as', isAuth, attachCurrentUser, checkRole('admin'), async (req, res) => {
+    try {
+      const email = req.body.user.email;
+      const authServiceInstance = new AuthService();
+      const { user, token } = await authServiceInstance.LoginAs(email);
+      return res.status(200).json({ user, token }).end();
+    } catch(e) {
+      console.log('Error in login as user: ', e);
       return res.json(e).status(500).end();
     }
   })

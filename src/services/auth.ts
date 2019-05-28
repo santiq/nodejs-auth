@@ -28,6 +28,21 @@ export default class AuthService {
     }
   }
 
+  public async LoginAs(email): Promise<any> {
+    const userRecord = await UserModel.findOne({ email });
+    console.log('Finding user record...');
+    if (!userRecord) {
+      throw new Error('User not found');
+    }
+    return {
+      user: {
+        email: userRecord.email,
+        name: userRecord.name,
+      },
+      token: this.generateJWT(userRecord),
+    }
+  }
+
   public async SignUp(email, password, name): Promise<any> {
     const salt = randomBytes(32);
     const passwordHashed = await argon2.hash(password, { salt });
